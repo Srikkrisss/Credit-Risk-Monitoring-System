@@ -1,0 +1,29 @@
+USE CreditRiskDB;
+GO
+
+CREATE TABLE Branches
+(
+	BranchID INT IDENTITY(1,1) PRIMARY KEY,
+	
+	BranchName VARCHAR(100) NOT NULL,
+
+	BranchCode VARCHAR(10) UNIQUE NOT NULL,
+
+	AddressLine VARCHAR(200),
+
+	City VARCHAR(50) NOT NULL,
+
+	StateName VARCHAR(50) NOT NULL,
+
+	Pincode VARCHAR(10),
+
+	Phone VARCHAR(15),
+
+	Email VARCHAR(100),
+
+	IFSCCode VARCHAR(20) UNIQUE,
+
+	CreatedDate DATETIME DEFAULT GETDATE()
+);
+GO
+
