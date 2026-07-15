@@ -9,7 +9,6 @@ Create TABLE Loans
 
 	BranchID INT NOT NULL,
 
-
     OfficerID INT NOT NULL,
 
 	LoanNumber VARCHAR(20) UNIQUE NOT NULL,
@@ -20,11 +19,12 @@ Create TABLE Loans
 
 	InterestRate DECIMAL(5,2) NOT NULL,
 
-	LoanStatus VARCHAR(20) NOT NULL,
+	TenureMonths INT NOT NULL,
 	
+	LoanStatus VARCHAR(20) NOT NULL,
+
 	SanctionDate DATE NOT NULL,
 
-	TenureMonths INT NOT NULL,
 
 
 	CONSTRAINT FK_Loans_Customers

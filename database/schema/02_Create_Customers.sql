@@ -15,7 +15,7 @@ CREATE TABLE Customers
 
     Email VARCHAR(100) UNIQUE,
 
-    Phone VARCHAR(15),
+    Phone VARCHAR(10),
 
     PAN VARCHAR(10) UNIQUE,
 
@@ -29,7 +29,9 @@ CREATE TABLE Customers
 
     City VARCHAR(50),
 
+    CustomerStatus VARCHAR(20) DEFAULT 'Active',
+
     CreatedDate DATETIME DEFAULT GETDATE()
 );
 GO
-SELECT * FROM Customers;
+
