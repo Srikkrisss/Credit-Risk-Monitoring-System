@@ -1,23 +1,11 @@
-from extract import extract_data
-from transform import transform_data
-from load import load_data
-
-from logger import logger
+from etl.extract import extract_data
+from etl.transform import transform_data
+from etl.load import load_data
 
 
 def run_pipeline():
 
-    logger.info("ETL Pipeline Started")
-
-    print()
-
-    print("==============================")
-
-    print(" CREDIT RISK ETL PIPELINE ")
-
-    print("==============================")
-
-    print()
+    print("\n========== ETL PIPELINE STARTED ==========\n")
 
     extract_data()
 
@@ -25,15 +13,7 @@ def run_pipeline():
 
     load_data()
 
-    logger.info("ETL Pipeline Completed")
-
-    print()
-
-    print("==============================")
-
-    print(" ETL COMPLETED ")
-
-    print("==============================")
+    print("\n========== ETL PIPELINE COMPLETED ==========\n")
 
 
 if __name__ == "__main__":
