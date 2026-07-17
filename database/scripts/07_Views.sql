@@ -136,6 +136,44 @@ JOIN Repayments r
 ON l.LoanID=r.LoanID;
 GO
 
+CREATE VIEW vw_BranchDashboard AS
+
+SELECT
+
+b.BranchName,
+
+l.LoanNumber,
+
+l.LoanType,
+
+l.LoanAmount,
+
+l.InterestRate,
+
+l.LoanStatus,
+
+lo.FirstName + ' ' + lo.LastName AS OfficerName,
+
+c.FirstName + ' ' + c.LastName AS CustomerName,
+
+cs.CreditScore,
+
+cs.RiskCategory
+
+FROM Loans l
+
+JOIN Customers c
+ON l.CustomerID = c.CustomerID
+
+JOIN Branches b
+ON l.BranchID = b.BranchID
+
+JOIN LoanOfficers lo
+ON l.OfficerID = lo.OfficerID
+
+JOIN CreditScores cs
+ON c.CustomerID = cs.CustomerID;
+
 
 SELECT * FROM vw_CustomerLoanSummary;
 
@@ -146,3 +184,5 @@ SELECT * FROM vw_BranchPerformance;
 SELECT * FROM vw_HighRiskCustomers;
 
 SELECT * FROM vw_RepaymentStatus;
+
+SELECT * FROM vw_BranchDashboard;
