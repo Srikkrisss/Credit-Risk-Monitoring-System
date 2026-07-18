@@ -23,3 +23,54 @@ class Customer(Base):
     StateName = Column(String(50))
     City = Column(String(50))
     CreatedDate = Column(DateTime)
+
+class Loan(Base):
+
+    __tablename__ = "Loans"
+
+    LoanID = Column(Integer, primary_key=True, index=True)
+
+    CustomerID = Column(Integer)
+    BranchID = Column(Integer)
+    OfficerID = Column(Integer)
+    LoanNumber = Column(String(8))
+
+    LoanType = Column(String(50))
+    LoanAmount = Column(DECIMAL(18,2))
+    InterestRate = Column(DECIMAL(5,2))
+
+    TenureMonths = Column(Integer)
+
+    LoanStatus = Column(String(30))
+
+    SanctionDate = Column(Date)
+
+class Branch(Base):
+
+    __tablename__ = "Branches"
+
+    BranchID = Column(Integer, primary_key=True, index=True)
+
+    BranchName = Column(String(100))
+    BranchCode = Column(String(10))
+    AddressLine = Column(String(50))
+    City = Column(String(50))
+    StateName = Column(String(50))
+    Pincode = Column(String(6))
+    Phone = Column(String(10))
+    Email = Column(String(50))
+    IFSCCode = Column(String(20))
+    CreatedDate = Column(DateTime)
+
+
+class CreditScore(Base):
+
+    __tablename__ = "CreditScores"
+
+    CreditScoreID = Column(Integer, primary_key=True)
+
+    CustomerID = Column(Integer)
+    CreditScore = Column(Integer)
+    CreditAgency = Column(String(50))
+    ScoreDate = Column(Date)
+    RiskCategory = Column(String(20))
