@@ -93,3 +93,26 @@ class DefaulterResponse(BaseModel):
     DueDate: date
 
     PaymentStatus: str
+
+
+from pydantic import BaseModel
+
+
+class CreditRiskRequest(BaseModel):
+
+    Age: int
+    EmploymentYears: int
+    CreditScore: int
+    AnnualIncome: float
+    LoanAmount: float
+    InterestRate: float
+    LoanTerm: int
+    ExistingLoans: int
+    DebtToIncomeRatio: float
+    CollateralValue: float
+
+
+class CreditRiskResponse(BaseModel):
+
+    Prediction: str
+    RiskProbability: float
