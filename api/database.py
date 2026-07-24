@@ -6,17 +6,22 @@ from config import *
 
 connection_string = (
     f"DRIVER={{{DRIVER}}};"
-    f"SERVER={SERVER};"
+    f"SERVER={SERVER},1433;"
     f"DATABASE={DATABASE};"
-    f"Trusted_Connection={TRUSTED_CONNECTION};"
+    f"UID={UID};"
+    f"PWD={PWD};"
+    "Encrypt=yes;"
     "TrustServerCertificate=yes;"
+    "Connection Timeout=5;"
 )
-
 DATABASE_URL = (
     f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
 )
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -24,13 +29,9 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-
 def get_db():
-
     db = SessionLocal()
-
     try:
         yield db
-
     finally:
         db.close()
