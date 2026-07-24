@@ -1,5 +1,12 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from api.models import (
+    Customer,
+    Loan,
+    Branch,
+    CreditScore,
+    PredictionHistory
+)
 
 from api.models import Customer, Loan, Branch, CreditScore
 
@@ -191,3 +198,48 @@ def get_defaulters(db: Session):
     """)
 
     return db.execute(query).mappings().all()
+
+def save_prediction(
+    db,
+    customer_id,
+    prediction,
+    probability,
+    risk_level,
+    model_version="v1.0"
+):
+
+    prediction_record = PredictionHistory(
+        CustomerID=customer_id,
+        Prediction=prediction,
+        Probability=probability,
+        RiskLevel=risk_level,
+        ModelVersion=model_version
+    )
+
+    db.add(prediction_record)
+    db.commit()
+    db.refresh(prediction_record)
+
+    return prediction_record
+
+
+def get_prediction_history(db):
+
+    return (
+        db.query(PredictionHistory)
+        .order_by(
+            PredictionHistory.PredictionTime.desc()
+        )
+        .all()
+    )
+
+
+def get_prediction(db, prediction_id):
+
+    return (
+        db.query(PredictionHistory)
+        .filter(
+            PredictionHistory.PredictionID == prediction_id
+        )
+        .first()
+    )

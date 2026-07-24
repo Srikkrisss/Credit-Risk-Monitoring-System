@@ -1,11 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from api.schemas import (
-    CreditRiskRequest,
-    CreditRiskResponse
-)
+from api.schemas import CreditRiskRequest
+from api.database import get_db
 
-from api.ml.predictor import predict_risk
+from api.services.prediction_service import generate_prediction
 
 router = APIRouter(
     prefix="/predict",
@@ -13,28 +12,13 @@ router = APIRouter(
 )
 
 
-@router.post(
-    "/",
-    response_model=CreditRiskResponse
-)
-def predict(request: CreditRiskRequest):
+@router.post("/")
+def predict(
+    request: CreditRiskRequest,
+    db: Session = Depends(get_db)
+):
 
-    prediction, probability = predict_risk(
-        request.dict()
+    return generate_prediction(
+        request.dict(),
+        db
     )
-
-    result = "High Risk"
-
-    if prediction == 0:
-        result = "Low Risk"
-
-    return {
-
-        "Prediction": result,
-
-        "RiskProbability": round(
-            probability,
-            4
-        )
-
-    }

@@ -99,7 +99,7 @@ from pydantic import BaseModel
 
 
 class CreditRiskRequest(BaseModel):
-
+    CustomerID: int
     Age: int
     EmploymentYears: int
     CreditScore: int

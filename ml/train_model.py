@@ -1,12 +1,9 @@
-import pandas as pd
 import joblib
-
+import pandas as pd
 from pathlib import Path
 
-from sklearn.model_selection import train_test_split
-
 from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
@@ -14,36 +11,74 @@ from sklearn.metrics import (
     roc_auc_score
 )
 
-# ==========================================
+from ml.feature_engineering import engineer_features
+
+
+# ---------------------------------------------------
+# Paths
+# ---------------------------------------------------
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+DATASET_PATH = BASE_DIR / "data" / "ml_dataset.csv"
+MODEL_PATH = BASE_DIR / "models" / "credit_risk_model.pkl"
+
+# ---------------------------------------------------
 # Load Dataset
-# ==========================================
+# ---------------------------------------------------
 
-df = pd.read_csv("data/ml_dataset.csv")
+print("=" * 60)
+print("Loading Dataset...")
+print("=" * 60)
 
-# ==========================================
-# Features and Target
-# ==========================================
+df = pd.read_csv(DATASET_PATH)
 
-X = df.drop(
-    columns=[
-        "CustomerID",
-        "Risk"
-    ]
+print(df.head())
+print()
+print(df.shape)
+
+# ---------------------------------------------------
+# Remove already engineered columns (if they exist)
+# ---------------------------------------------------
+
+engineered_columns = [
+    "LoanToIncomeRatio",
+    "MonthlyIncome",
+    "EstimatedEMI",
+    "EMIBurden",
+    "CollateralCoverage",
+    "IncomePerLoan",
+    "CreditQuality"
+]
+
+df = df.drop(
+    columns=[c for c in engineered_columns if c in df.columns],
+    errors="ignore"
 )
 
-y = df["Risk"]
+# ---------------------------------------------------
+# Feature Engineering
+# ---------------------------------------------------
 
-print("\nFeatures")
+print("\nCreating Engineered Features...")
 
-print(X.columns)
+df = engineer_features(df)
 
-print("\nTarget")
+print(df.head())
 
-print(y.head())
+# ---------------------------------------------------
+# Features & Target
+# ---------------------------------------------------
 
-# ==========================================
-# Train Test Split
-# ==========================================
+TARGET = "Risk"
+
+X = df.drop(columns=["CustomerID", TARGET])
+
+y = df[TARGET]
+
+# ---------------------------------------------------
+# Train/Test Split
+# ---------------------------------------------------
 
 X_train, X_test, y_train, y_test = train_test_split(
     X,
@@ -53,126 +88,73 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
-print("\nTraining Samples:", len(X_train))
-print("Testing Samples :", len(X_test))
-
-# ==========================================
-# Create Model
-# ==========================================
-
-model = RandomForestClassifier(
-
-    n_estimators=200,
-
-    random_state=42,
-
-    max_depth=10
-
-)
-
-# ==========================================
-# Train
-# ==========================================
+# ---------------------------------------------------
+# Model
+# ---------------------------------------------------
 
 print("\nTraining Model...")
 
-model.fit(
-    X_train,
-    y_train
+model = RandomForestClassifier(
+    n_estimators=300,
+    random_state=42,
+    n_jobs=-1
 )
 
-print("Training Complete")
+model.fit(X_train, y_train)
 
-# ==========================================
-# Predictions
-# ==========================================
+# ---------------------------------------------------
+# Evaluation
+# ---------------------------------------------------
 
 predictions = model.predict(X_test)
 
-probabilities = model.predict_proba(X_test)[:,1]
+probabilities = model.predict_proba(X_test)[:, 1]
 
-# ==========================================
-# Evaluation
-# ==========================================
+print("\nAccuracy")
 
 accuracy = accuracy_score(
     y_test,
     predictions
 )
 
+print(round(accuracy,4))
+
+print("\nROC AUC")
+
 roc = roc_auc_score(
     y_test,
     probabilities
 )
 
-print("\n==========================")
-
-print("Accuracy")
-
-print(accuracy)
-
-print("\nROC AUC")
-
-print(roc)
-
-print("\nConfusion Matrix")
-
-print(confusion_matrix(
-    y_test,
-    predictions
-))
+print(round(roc,4))
 
 print("\nClassification Report")
 
-print(classification_report(
-    y_test,
-    predictions
-))
-
-# ==========================================
-# Feature Importance
-# ==========================================
-
-importance = pd.DataFrame({
-
-    "Feature": X.columns,
-
-    "Importance": model.feature_importances_
-
-})
-
-importance = importance.sort_values(
-
-    by="Importance",
-
-    ascending=False
-
+print(
+    classification_report(
+        y_test,
+        predictions
+    )
 )
 
-print("\n==========================")
+print("\nConfusion Matrix")
 
-print("Feature Importance")
+print(
+    confusion_matrix(
+        y_test,
+        predictions
+    )
+)
 
-print(importance)
-
-# ==========================================
+# ---------------------------------------------------
 # Save Model
-# ==========================================
-
-MODEL_PATH = Path("models")
-
-MODEL_PATH.mkdir(
-
-    exist_ok=True
-
-)
+# ---------------------------------------------------
 
 joblib.dump(
-
     model,
-
-    MODEL_PATH / "credit_risk_model.pkl"
-
+    MODEL_PATH
 )
 
-print("\nModel Saved Successfully")
+print("\nModel Saved Successfully!")
+
+print(MODEL_PATH)

@@ -1,5 +1,15 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, String, Date, DateTime, DECIMAL
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Float,
+    DateTime,
+    ForeignKey
+)
+
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -74,3 +84,31 @@ class CreditScore(Base):
     CreditAgency = Column(String(50))
     ScoreDate = Column(Date)
     RiskCategory = Column(String(20))
+
+
+class PredictionHistory(Base):
+    __tablename__ = "PredictionHistory"
+
+    PredictionID = Column(Integer, primary_key=True, index=True)
+
+    CustomerID = Column(
+        Integer,
+        ForeignKey("Customers.CustomerID"),
+        nullable=True
+    )
+
+    Prediction = Column(String(20), nullable=False)
+
+    Probability = Column(Float, nullable=False)
+
+    RiskLevel = Column(String(20), nullable=False)
+
+    ModelVersion = Column(
+        String(20),
+        default="v1.0"
+    )
+
+    PredictionTime = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
